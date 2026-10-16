@@ -62,7 +62,7 @@ function Invoke-CleanData {
 
   $clean = New-Object System.Collections.ArrayList
   $seen = @{}
-  $crawlAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+  $crawlAt = (Get-CnNow).ToString('yyyy-MM-dd HH:mm:ss')
 
   foreach ($r in $Records) {
     if ($null -eq $r) { continue }
@@ -244,7 +244,7 @@ function Invoke-WriteSiteData {
   )
 
   $publicData = Join-Path $ProjectRoot 'public\data'
-  $now = Get-Date
+  $now = Get-CnNow
   $floor = [math]::Floor($StatTime.Minute / 5) * 5
   $statLabel = $StatTime.ToString('yyyy-MM-dd ') + ('{0:D2}' -f $StatTime.Hour) + ':' + ('{0:D2}' -f [int]$floor)
 

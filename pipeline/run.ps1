@@ -13,7 +13,12 @@ param(
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
-$startedAt = Get-Date
+# 计时统一换算到北京时间：云端 windows-latest 运行器时区为 UTC，直接用 Get-Date 会让
+# 站点上的「数据更新于」「generated_at」比真实时间早 8 小时（本机运行两者等价）。
+$script:tzCn = [System.TimeZoneInfo]::FindSystemTimeZoneById('China Standard Time')
+function Get-CnNow { [System.TimeZoneInfo]::ConvertTimeFromUtc([datetime]::UtcNow, $script:tzCn) }
+
+$startedAt = Get-CnNow
 $configPath = Join-Path $ProjectRoot 'config.json'
 if (-not (Test-Path -LiteralPath $configPath)) { throw "未找到 config.json：$configPath" }
 
@@ -25,7 +30,7 @@ if (-not [string]::IsNullOrWhiteSpace($Source)) { $config['source'] = $Source }
 . (Join-Path $PSScriptRoot 'adapters.ps1')
 . (Join-Path $PSScriptRoot 'scoring.ps1')
 
-$statTime = Get-Date
+$statTime = Get-CnNow
 $rowsIn   = 0
 $status   = 'success'
 $errMsg   = ''
@@ -80,7 +85,7 @@ if (-not (Test-Path -LiteralPath $logDir)) { New-Item -ItemType Directory -Force
 $job = [pscustomobject]@{
   job_id     = ([guid]::NewGuid().ToString('N').Substring(0, 12))
   started_at = $startedAt.ToString('yyyy-MM-dd HH:mm:ss')
-  ended_at   = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+  ended_at   = (Get-CnNow).ToString('yyyy-MM-dd HH:mm:ss')
   status     = $status
   source     = "$($config.source)"
   rows_in    = $rowsIn
@@ -92,7 +97,7 @@ $job = [pscustomobject]@{
 }
 $jobJson = $job | ConvertTo-Json -Depth 5
 Write-TextNoBom -Path (Join-Path $logDir 'last-run.json') -Text $jobJson
-Write-TextNoBom -Path (Join-Path $logDir ('run-' + (Get-Date).ToString('yyyyMMdd-HHmmss') + '.json')) -Text $jobJson
+Write-TextNoBom -Path (Join-Path $logDir ('run-' + (Get-CnNow).ToString('yyyyMMdd-HHmmss') + '.json')) -Text $jobJson
 
 if ($status -ne 'success') {
   Write-Host "[AppSeeker] 更新失败：$errMsg" -ForegroundColor Red
