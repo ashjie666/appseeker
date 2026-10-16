@@ -4,7 +4,7 @@
 核心目标：发现**需求强、体验差**的可替代机会 —— 即那些**下载量很高、但好评率明显偏低**的小程序。
 
 > 本地可零依赖直接运行：原生 HTML/CSS/JS 静态站 + PowerShell 数据管道，本机无需 Python / Node / Docker。
-> 生产形态为**互联网端**：云端定时任务每日两次刷新数据，整站发布在 GitHub Pages。
+> 生产形态为**互联网端**：云端定时任务每日两次刷新数据，整站同时发布到 **GitHub Pages**（海外）与**阿里云服务器**（国内）。
 
 ---
 
@@ -118,10 +118,12 @@ platform,external_id,name,developer,category,download_display,rating_positive,ra
 
 ```
 GitHub Actions cron（北京时间 07:07 / 19:07）
-   └─ windows-latest runner 执行 pipeline/run.ps1
+   └─ refresh（windows-latest）执行 pipeline/run.ps1
         └─ 产出 public/data/latest.js · history.js
              ├─ 提交回仓库（数据留档，供下一轮计算排名变化）
-             └─ 发布到 GitHub Pages → https://ashjie666.github.io/appseeker/
+             └─ 同一份产物分发给两个并列的部署 job
+                  ├─ deploy-pages   → GitHub Pages（海外）
+                  └─ deploy-aliyun  → rsync → 阿里云 /www/wwwroot/sites/appseeker/（国内）
 ```
 
 **前端页面、数据契约、PowerShell 管道逻辑零改动** —— 上云只换了「谁来触发」和「产物放在哪访问」。
@@ -195,10 +197,43 @@ start L:\site\appseeker\public\index.html
 - **停滞**：首页根据 `generated_at` 与 `config.json` 的 `freshness`（12h / 24h）显示 `数据最新` → `数据延迟` → `数据已过期` 三级徽章，无需额外监控
 - **紧急停止**：把 `config.json` 的 `compliance.killSwitch` 改为 `true`，管道立即停止采集
 
-### 5.6 已知边界
+### 5.6 同步到阿里云（国内访问）
+
+站点同时发布到两处，**用的是同一份产物**：refresh job 产出 `public/` 后上传为 artifact，两个并列的部署 job 各自消费它 —— 一个发 Pages，一个 rsync 到阿里云，所以两个地址的数据永远一致。
+
+部署目标是 nginx **公共父目录下的子路径**，与 gameseek、gameqker 并列，因此**不需要改 nginx 配置、也不需要重载服务**：
+
+```
+refresh (windows-latest)
+  ├─ deploy-pages   → GitHub Pages
+  └─ deploy-aliyun  → rsync → /www/wwwroot/sites/appseeker/
+```
+
+**一次性配置 3 个仓库 Secrets**（仓库 → `Settings` → `Secrets and variables` → `Actions`）：
+
+| Secret | 值 |
+|---|---|
+| `SSH_HOST` | 服务器公网 IP |
+| `SSH_USER` | SSH 登录名（如 `root`） |
+| `SSH_KEY` | 部署私钥**全文**（含 `-----BEGIN` / `-----END` 行） |
+
+> 本机已有可复用的部署私钥（公钥已在服务器 `authorized_keys` 中）：`%USERPROFILE%\.ssh\gameseek_deploy`、`%USERPROFILE%\.ssh\gameqker_deploy`，任选一把即可。
+> 私钥不外发：在 PowerShell 里执行下面这条命令可直接把全文复制到剪贴板，再到 GitHub 网页粘贴。
+>
+> ```powershell
+> Get-Content -Raw "$env:USERPROFILE\.ssh\gameseek_deploy" | Set-Clipboard
+> ```
+
+**前置条件**：服务器已装 `rsync`（`yum install -y rsync`）；安全组 22 端口来源为 `0.0.0.0/0`（GitHub Actions 出口 IP 是动态的）。
+
+配置完成后手动 Run 一次 workflow，`deploy-aliyun` 标绿即生效。访问地址：`http://<你的服务器IP>/appseeker/`
+
+> 站点全程使用相对路径，因此在阿里云的 `/appseeker/` 与 GitHub Pages 的 `/appseeker/` 下表现完全一致，无需任何改动。
+
+### 5.7 已知边界
 
 - **收藏不跨设备**：收藏数据存在浏览器 localStorage，换设备或清缓存即丢失。跨设备同步需要账号体系 + 后端存储，属另一个量级的工程，当前 MVP 不做
-- **国内访问速度**：GitHub Pages 在国内访问不稳定。若这是硬约束，可后续迁移到「国内云函数 + COS/OSS」—— 届时只需重写管道实现，前端与数据契约无需改动
+- **两站点一致性**：GitHub Pages 与阿里云用的是同一份产物，数据必然一致；但若 `deploy-aliyun` 单独失败（如 SSH 不通），阿里云那份会停在上一轮 —— 看 Actions 里该 job 是否标红即可发现
 - **数据源仍是 demo**：上云解决的是「何时更新、放在哪访问」，**不解决「数据从哪来」**。真实数据需走平台适配器（须先过合规评审）或其他数据通道
 
 ---

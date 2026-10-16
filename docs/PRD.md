@@ -340,10 +340,10 @@ def select_high_dl_low_rating(df, pctl=0.80, rate_thr=0.70, min_reviews=100):
 | 数据交付 | 管道生成 `public/data/latest.js`（全局变量）+ `.json` | **绕开 `file://` 的 CORS 限制**，双击也能跑 |
 | 数据管道 | PowerShell + JSON（`pipeline/`） | 云端 runner 与本地开发环境一致（windows-latest + Windows PowerShell），**管道零改造**上云 |
 | 调度 | **GitHub Actions 定时任务（cron）**，每日 2 次（北京时间 07:07 / 19:07） | 互联网端无人值守，无需常驻进程，也无需自备服务器 |
-| 托管 | **GitHub Pages**（静态托管，站点全程使用相对路径） | 零成本、免运维，推送即发布；天然适配 `/appseeker/` 子路径 |
+| 托管 | **GitHub Pages + 阿里云轻量服务器**（同一份 artifact 分发给两个并列的部署 job） | 海外与国内双线可达；站点全用相对路径，同时兼容 Pages 的 `/<repo>/` 与阿里云的 `/appseeker/` 子路径 |
 | 归档 | `data/snapshots/*.json` 按时间点留存（云端仅保留最近 6 份） | 可回溯时间序列，同时避免仓库体积膨胀 |
 
-> ⚠️ **已知边界**：GitHub Pages 在国内访问不稳定。若国内访问速度成为硬约束，可迁移到「国内云函数（腾讯云 SCF / 阿里云 FC）+ 对象存储（COS / OSS）静态托管 + CDN」—— 届时只需把管道实现改写为 Node.js / Python（云函数不跑 PowerShell），**前端与 JSON 契约保持不变**。
+> ✅ **国内访问已解决**：整站除 GitHub Pages 外，还由 GitHub Actions 的 `deploy-aliyun` job 通过 rsync 同步到阿里云轻量服务器的 nginx 子路径 `/www/wwwroot/sites/appseeker/`；两个地址消费同一份 artifact，数据一致。管道仍跑在 windows-latest，PowerShell 零改造。
 >
 > **升级路径（阶段二起）**：管道迁移到 Python（FastAPI + Playwright + Airflow），前端迁移到 Next.js，数据库用 PostgreSQL 分区表 + Redis 缓存。当前 MVP 的 JSON 契约保持不变，迁移时前端无需改动。
 
