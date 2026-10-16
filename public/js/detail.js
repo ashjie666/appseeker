@@ -2,6 +2,18 @@
 (function () {
   'use strict';
 
+  /* ---------- 主题切换（与 gameqker / 新游雷达 一致） ---------- */
+  (function initTheme() {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var root = document.documentElement;
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      try { window.localStorage.setItem('appseeker:theme', next); } catch (e) {}
+    });
+  })();
+
   var DATA = window.APPS_DATA;
   var HISTORY = window.APPS_HISTORY || {};
   var METRIC = '下载量';   // 当前平台的量纲名称，由 boot() 按平台覆写
@@ -72,8 +84,7 @@
   function renderChrome() {
     var m = DATA.meta, f = freshness(m);
     $('upd').innerHTML =
-      '数据更新于 <b>' + esc(m.stat_time) + '</b><span class="badge ' + f.cls + '">' + f.text + '</span><br>' +
-      '下次更新 ' + esc(m.next_update) + ' · 数据源 ' + esc(m.data_source);
+      '数据更新于 <b>' + esc(m.stat_time) + '</b><span class="badge ' + f.cls + '">' + f.text + '</span>';
     $('footMeta').textContent = m.disclaimer + ' 最近生成：' + m.generated_at + '（' + m.timezone + '）';
   }
 
@@ -208,7 +219,7 @@
         '</tr>';
     }).join('');
 
-    $('cmp').innerHTML = '<div style="border:1px solid var(--rule);border-radius:10px;overflow:hidden">' +
+    $('cmp').innerHTML = '<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">' +
       '<table class="tbl"><thead><tr><th>平台</th><th>排名</th><th>热度量级</th><th>好评率</th><th>机会指数</th><th>标记</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
   }

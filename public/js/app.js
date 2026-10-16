@@ -2,6 +2,18 @@
 (function () {
   'use strict';
 
+  /* ---------- 主题切换（与 gameqker / 新游雷达 一致） ---------- */
+  (function initTheme() {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var root = document.documentElement;
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      try { window.localStorage.setItem('appseeker:theme', next); } catch (e) {}
+    });
+  })();
+
   var DATA = window.APPS_DATA;
   var state = {
     platforms: {},
@@ -193,10 +205,10 @@
     var f = freshness(m);
     $('upd').innerHTML =
       '数据更新于 <b>' + esc(m.stat_time) + '</b>' +
-      '<span class="badge ' + f.cls + '">' + f.text + '</span><br>' +
-      '覆盖 ' + m.platforms.length + ' 平台 / ' + m.total_rows + ' 条 · 反差命中 <b>' + m.flagged_count + '</b> 条' +
-      '<br>下次更新 ' + esc(m.next_update) +
-      ' · 数据源 ' + esc(m.data_source);
+      '<span class="badge ' + f.cls + '">' + f.text + '</span>';
+    $('introText').textContent =
+      '覆盖 ' + m.platforms.length + ' 平台 / ' + m.total_rows + ' 条记录，反差命中 ' + m.flagged_count + ' 条 · 下次更新 ' +
+      m.next_update + ' · 数据源 ' + m.data_source + '。';
     $('footMeta').textContent = m.disclaimer + ' 最近生成：' + m.generated_at + '（' + m.timezone + '）';
     document.title = m.product + '（更新于 ' + m.stat_time + '）';
   }
