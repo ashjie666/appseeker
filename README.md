@@ -121,33 +121,31 @@ GitHub Actions cron（北京时间 07:07 / 19:07）
    └─ windows-latest runner 执行 pipeline/run.ps1
         └─ 产出 public/data/latest.js · history.js
              ├─ 提交回仓库（数据留档，供下一轮计算排名变化）
-             └─ 发布到 GitHub Pages → https://<用户名>.github.io/<仓库名>/
+             └─ 发布到 GitHub Pages → https://ashjie666.github.io/appseeker/
 ```
 
 **前端页面、数据契约、PowerShell 管道逻辑零改动** —— 上云只换了「谁来触发」和「产物放在哪访问」。
-站点内所有资源引用均为**相对路径**，因此部署在 `/<仓库名>/` 子路径下无需任何调整。
+站点内所有资源引用均为**相对路径**，因此部署在 `/appseeker/` 子路径下无需任何调整。
 
 ### 5.1 一次性部署
 
-**① 建一个公开仓库**，仓库名建议 `appseeker`。
+**① 建一个公开仓库**：`ashjie666/appseeker`（已建好，公开、空仓库）。
 
 > GitHub Free 计划下**只有公开仓库**才能使用 Pages。仓库里只有代码和 demo 模拟数据，不含任何敏感信息。
 
-**② 安装 Git 客户端**（本机当前没有 git）。二选一：
+**② Git 客户端**：本机已装好 Git 2.55，此步跳过。只有在**换一台新机器**部署时才需要安装 —— **GitHub Desktop**（图形化，推荐）<https://desktop.github.com/> 或 **Git for Windows** <https://git-scm.com/download/win>。
 
-- **GitHub Desktop**（图形化，推荐）<https://desktop.github.com/>
-- **Git for Windows**（命令行）<https://git-scm.com/download/win>
+**③ 关联远端并推送**（在 `L:\site\appseeker` 目录下执行）：
 
-**③ 初始化并推送**（在 `L:\site\appseeker` 目录下执行）：
+本机已完成 `git init` 与首次提交（`61a7575`，分支 `main`），所以只需关联远端再推送：
 
 ```powershell
-git init
-git add .
-git commit -m "feat: AppSeeker MVP with cloud pipeline"
-git branch -M main
-git remote add origin https://github.com/<你的用户名>/appseeker.git
+git remote add origin https://github.com/ashjie666/appseeker.git
 git push -u origin main
 ```
+
+> 首次 `push` 会弹出 Git Credential Manager 登录窗口，在浏览器完成一次 GitHub 授权即可，**不需要手工创建 PAT**。
+> 若在一台全新机器上从零开始，完整命令为：`git init` → `git add .` → `git commit -m "feat: AppSeeker MVP with cloud pipeline"` → `git branch -M main` → 上面的 `git remote add` → `git push -u origin main`。
 
 > 用 GitHub Desktop 的话：`File → Add local repository` 选择 `L:\site\appseeker` → `Publish repository`，注意**取消勾选** “Keep this code private”。
 
@@ -159,7 +157,7 @@ git push -u origin main
 
 跑完后确认三件事：运行标绿、`Run data pipeline` 日志中出现 `pipeline ok`、`Commit refreshed data` 显示已提交推送。
 
-**⑥ 访问站点**：`https://<你的用户名>.github.io/appseeker/`
+**⑥ 访问站点**：`https://ashjie666.github.io/appseeker/`
 
 ### 5.2 定时规则
 
