@@ -159,7 +159,7 @@ function Get-DemoRankings {
 function Get-DemoHistory {
   param([hashtable]$Config, [array]$Records, [int]$Days)
   $hist = @{}
-  $today = (Get-Date).Date
+  $today = (Get-CnNow).Date
   foreach ($r in $Records) {
     $id = "$($r.platform):$($r.external_id)"
     $rate = $r.rating_positive / [double]$r.rating_total
