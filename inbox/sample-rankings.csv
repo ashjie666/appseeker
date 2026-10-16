@@ -1,0 +1,13 @@
+platform,external_id,name,developer,category,download_display,rating_positive,rating_total,rating_avg,comment_count,source_url
+wechat,wx1001,极速扫描助手,星辰科技,工具,1000万+,11842,20000,3.4,816,https://example.com/wechat/rank
+wechat,wx1002,万能工具箱,云图网络,工具,500万+,9600,18000,3.6,540,https://example.com/wechat/rank
+wechat,wx1003,智能记账宝,极目科技,工具,100万+,18400,20000,4.6,430,https://example.com/wechat/rank
+wechat,wx1004,口袋天气通,蓝鲸软件,工具,10万+,3600,4000,4.5,140,https://example.com/wechat/rank
+wechat,wx1005,一键快递查,和光数字科技,生活服务,1000万+,8470,22000,3.9,1204,https://example.com/wechat/rank
+wechat,wx1006,随手缴费通,方寸科技,生活服务,500万+,17400,20000,4.6,620,https://example.com/wechat/rank
+wechat,wx1007,每日点餐社,声动软件,生活服务,50万+,5800,8000,3.2,205,https://example.com/wechat/rank
+alipay,ali2001,万能工具箱,天穹信息技术,工具,1000万+,6890,15000,3.1,712,https://example.com/alipay/rank
+alipay,ali2002,极速扫描助手,同尘科技,工具,500万+,13950,15000,4.7,388,https://example.com/alipay/rank
+alipay,ali2003,智能题库专家,跃迁数字科技,教育,100万+,11200,12000,4.4,296,https://example.com/alipay/rank
+alipay,ali2004,全民打卡圈,青柚工作室,生活服务,500万+,9900,22000,3.5,868,https://example.com/alipay/rank
+alipay,ali2005,闪电影票通,星辰科技,生活服务,50万+,6300,7200,3.3,178,https://example.com/alipay/rank

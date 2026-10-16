@@ -1,0 +1,39 @@
+{
+  "product": "AppSeeker 小程序机会雷达",
+  "source": "demo",
+  "platforms": [
+    { "code": "wechat",   "name": "微信",      "enabled": true,  "adapter": "wechat",   "demoCount": 200, "metricLabel": "下载量" },
+    { "code": "alipay",   "name": "支付宝",    "enabled": true,  "adapter": "alipay",   "demoCount": 160, "metricLabel": "下载量" },
+    { "code": "html5",    "name": "HTML5游戏", "enabled": true,  "adapter": "html5",    "demoCount": 140, "metricLabel": "游玩次数" },
+    { "code": "douyin",   "name": "抖音",      "enabled": false, "adapter": "douyin",   "demoCount": 140, "metricLabel": "下载量" },
+    { "code": "baidu",    "name": "百度",      "enabled": false, "adapter": "baidu",    "demoCount": 100, "metricLabel": "下载量" },
+    { "code": "kuaishou", "name": "快手",      "enabled": false, "adapter": "kuaishou", "demoCount": 90,  "metricLabel": "下载量" }
+  ],
+  "thresholds": {
+    "downloadPctl": 0.80,
+    "positiveRateMax": 0.70,
+    "minReviews": 100,
+    "minComments": 30
+  },
+  "presets": {
+    "loose":  { "label": "宽松", "downloadPctl": 0.50, "positiveRateMax": 0.75, "minReviews": 50 },
+    "normal": { "label": "标准", "downloadPctl": 0.80, "positiveRateMax": 0.70, "minReviews": 100 },
+    "strict": { "label": "严格", "downloadPctl": 0.90, "positiveRateMax": 0.65, "minReviews": 300 }
+  },
+  "schedule": {
+    "times": ["07:00", "19:00"],
+    "timezone": "Asia/Shanghai"
+  },
+  "freshness": {
+    "freshHours": 12,
+    "staleHours": 24
+  },
+  "historyDays": 14,
+  "compliance": {
+    "killSwitch": false,
+    "respectRobots": true,
+    "rateLimitPerSec": 1,
+    "userAgent": "AppSeekerBot/1.0 (+contact@example.com)",
+    "note": "默认使用 demo 模拟数据源，不发起任何真实抓取。切换为 csv / wechat / alipay / html5 前请先完成合规评审。"
+  }
+}

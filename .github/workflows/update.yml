@@ -1,0 +1,95 @@
+# AppSeeker · 云端数据管道
+#
+# 每日两次刷新榜单数据，并把整站发布到 GitHub Pages。
+#
+# 触发时点（cron 一律使用 UTC，北京时间 = UTC + 8）：
+#   '7 23 * * *'  →  北京时间 07:07
+#   '7 11 * * *'  →  北京时间 19:07
+# 刻意避开整点：GitHub 的定时任务在整点前后极度拥堵，常延迟数十分钟；错开可明显提升准点率。
+# 另注：schedule 事件只在**默认分支**上生效。
+#
+# 设计要点：
+#   - runs-on: windows-latest + Windows PowerShell，与本地开发验证环境完全一致，脚本零改造
+#   - 管道产出 public/data/*.js 后提交回本仓库；随后以 public/ 目录为站点根发布 Pages
+#   - 站点内所有资源引用均为相对路径，因此部署在 https://<user>.github.io/<repo>/ 子路径下同样正常
+#   - 快照目录只保留最近 6 份，避免仓库体积随每日两次运行持续膨胀
+
+name: Refresh data and deploy
+
+on:
+  schedule:
+    - cron: '7 23 * * *'
+    - cron: '7 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: appseeker-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: windows-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run data pipeline
+        shell: powershell
+        run: |
+          & (Join-Path $PWD 'pipeline\run.ps1')
+
+          # 管道内部会捕获异常并写入 last-run.json，故不能只依赖退出码，必须核对状态
+          $logPath = Join-Path $PWD 'data\logs\last-run.json'
+          if (-not (Test-Path -LiteralPath $logPath)) { throw 'data/logs/last-run.json not found' }
+          $log = Get-Content -LiteralPath $logPath -Raw -Encoding UTF8 | ConvertFrom-Json
+          if ($log.status -ne 'success') { throw "pipeline status = $($log.status)" }
+          Write-Host 'pipeline ok'
+
+      - name: Trim old snapshots
+        shell: powershell
+        run: |
+          $dir = Join-Path $PWD 'data\snapshots'
+          if (Test-Path -LiteralPath $dir) {
+            $all = @(Get-ChildItem -LiteralPath $dir -Filter *.json -File | Sort-Object Name)
+            if ($all.Count -gt 6) {
+              $all[0..($all.Count - 7)] | Remove-Item -Force
+            }
+            Write-Host ('snapshots kept: ' + @(Get-ChildItem -LiteralPath $dir -Filter *.json -File).Count)
+          }
+
+      - name: Commit refreshed data
+        shell: powershell
+        run: |
+          git config user.name 'appseeker-bot'
+          git config user.email 'appseeker-bot@users.noreply.github.com'
+          git add public/data data/snapshots data/logs
+
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m 'chore(data): refresh ranking snapshot'
+            git push
+            Write-Host 'data committed and pushed'
+          } else {
+            Write-Host 'no data change, skip commit'
+          }
+          exit 0
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

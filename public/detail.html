@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小程序详情 · AppSeeker</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>AppSeeker<small>小程序机会雷达</small></span>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="搜索小程序 / 小游戏 / 开发者 / 品类…" autocomplete="off">
+    </div>
+    <div class="upd" id="upd"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="crumb" id="crumb"></div>
+
+  <section class="dhead" id="dhead"></section>
+
+  <section class="dcards" id="dcards"></section>
+
+  <section class="chartcard">
+    <h3>趋势 · 热度与好评率</h3>
+    <p>柱形为估算热度量级（左轴，口径随平台：小程序为下载量，HTML5 游戏为游玩次数），折线为好评率（右轴）。数据来自每日两次的管道快照，随抓取逐日累积。</p>
+    <div id="trend"></div>
+  </section>
+
+  <section class="chartcard" id="cmpCard" style="display:none">
+    <h3>跨平台同名对比</h3>
+    <p>同一名称出现在多个平台时的横向对比，用于判断「需求强、体验差」是否跨平台成立。</p>
+    <div id="cmp"></div>
+  </section>
+
+  <section class="prov" id="prov"></section>
+
+</main>
+
+<footer class="foot wrap">
+  <p id="footMeta"></p>
+  <p>数据来源于各平台公开榜单 / 模拟示例数据，仅做聚合统计展示，不含任何用户个人信息；内容仅供参考，不构成投资建议。</p>
+</footer>
+
+<script src="data/latest.js"></script>
+<script src="data/history.js"></script>
+<script src="js/detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# 系统 / 编辑器产生的临时文件
+.DS_Store
+Thumbs.db
+*.tmp
+
+# 手工导入的真实榜单数据不入库：
+# 公开仓库不应出现第三方平台的原始抓取数据（合规考虑）
+inbox/*.csv
+!inbox/sample-rankings.csv

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppSeeker · 小程序机会雷达</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>AppSeeker<small>小程序机会雷达</small></span>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="搜索小程序 / 小游戏 / 开发者 / 品类…" autocomplete="off">
+    </div>
+    <div class="upd" id="upd"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="filters">
+    <div class="fgroup">
+      <span class="flabel">平台</span>
+      <span id="platChips"></span>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">品类</span>
+      <select id="cat"><option value="all">全部品类</option></select>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">热度门槛</span>
+      <span id="pctlChips"></span>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">好评率上限</span>
+      <input id="rate" type="range" min="30" max="95" step="5" value="70">
+      <span class="mono" id="rateVal">≤ 70%</span>
+    </div>
+    <div class="fgroup">
+      <label class="switch"><input id="onlyFlagged" type="checkbox" checked>仅看反差名单</label>
+      <button class="btn ghost" id="reset">重置</button>
+    </div>
+  </section>
+
+  <section class="viewtabs">
+    <button class="vtab on" data-view="list">榜单列表</button>
+    <button class="vtab" data-view="fav">我的收藏<span class="fbadge" id="favCount">0</span></button>
+  </section>
+
+  <div id="viewList">
+
+    <section class="sorts">
+      <button class="sortbtn on" data-sort="opportunity">机会指数</button>
+      <button class="sortbtn" data-sort="download">热度量级</button>
+      <button class="sortbtn" data-sort="rate">好评率（最低优先）</button>
+      <button class="sortbtn" data-sort="rank">排名</button>
+      <span class="res" id="resCount"></span>
+    </section>
+
+    <section class="panel">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:52px">收藏</th>
+            <th style="width:56px">排名</th>
+            <th>小程序 / 小游戏</th>
+            <th style="width:74px">平台</th>
+            <th style="width:110px">热度量级</th>
+            <th style="width:150px">好评率</th>
+            <th style="width:92px">机会指数</th>
+            <th style="width:88px" class="col-hide">标签</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none"></div>
+    </section>
+
+    <section class="chartcard">
+      <h3>热度 × 好评率 象限分布</h3>
+      <p>右下象限 = 高热度 · 低好评，即「需求强、体验差」的可替代机会。横轴为热度量级（对数刻度），口径随平台：小程序为下载量，HTML5 游戏为游玩次数。</p>
+      <div id="scatter"></div>
+    </section>
+
+  </div>
+
+  <section class="panel" id="viewFav" style="display:none">
+    <div class="favnote" id="favNote" style="display:none"></div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>条目</th>
+          <th style="width:78px">平台</th>
+          <th style="width:130px">热度量级</th>
+          <th style="width:140px">好评率</th>
+          <th style="width:90px">机会指数</th>
+          <th style="width:142px">收藏时间</th>
+          <th style="width:76px">操作</th>
+        </tr>
+      </thead>
+      <tbody id="favRows"></tbody>
+    </table>
+    <div class="empty" id="favEmpty" style="display:none"></div>
+  </section>
+
+</main>
+
+<footer class="foot wrap">
+  <p id="footMeta"></p>
+  <p>数据来源于各平台公开榜单 / 模拟示例数据，仅做聚合统计展示，不含任何用户个人信息；内容仅供参考，不构成投资建议。</p>
+  <p>AppSeeker MVP · 数据管道每日自动更新两次（07:00 / 19:00）。</p>
+</footer>
+
+<script src="data/latest.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
