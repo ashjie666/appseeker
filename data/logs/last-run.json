@@ -1,13 +1,13 @@
 {
-    "job_id":  "acfc9e0e8210",
-    "started_at":  "2026-11-15 07:34:32",
-    "ended_at":  "2026-11-15 07:34:36",
+    "job_id":  "07869855fe0a",
+    "started_at":  "2026-11-15 19:42:54",
+    "ended_at":  "2026-11-15 19:42:57",
     "status":  "success",
     "source":  "demo",
     "rows_in":  500,
     "rows_ok":  500,
     "flagged":  97,
-    "stat_time":  "2026-11-15 07:30",
-    "snapshot":  "20261115-0734.json",
+    "stat_time":  "2026-11-15 19:40",
+    "snapshot":  "20261115-1942.json",
     "error_msg":  ""
 }
