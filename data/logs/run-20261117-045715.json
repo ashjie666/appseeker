@@ -1,0 +1,13 @@
+{
+    "job_id":  "85512cd0f75c",
+    "started_at":  "2026-11-17 04:57:10",
+    "ended_at":  "2026-11-17 04:57:15",
+    "status":  "success",
+    "source":  "demo",
+    "rows_in":  500,
+    "rows_ok":  500,
+    "flagged":  97,
+    "stat_time":  "2026-11-17 04:55",
+    "snapshot":  "20261117-0457.json",
+    "error_msg":  ""
+}
